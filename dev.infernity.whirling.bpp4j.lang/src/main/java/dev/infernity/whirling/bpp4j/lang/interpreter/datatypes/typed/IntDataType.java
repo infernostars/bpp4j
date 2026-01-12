@@ -1,9 +1,5 @@
 package dev.infernity.whirling.bpp4j.lang.interpreter.datatypes.typed;
 
-import dev.infernity.whirling.bpp4j.lang.exc.InvalidCastException;
-import dev.infernity.whirling.bpp4j.lang.interpreter.datatypes.DataType;
-import dev.infernity.whirling.bpp4j.lang.interpreter.datatypes.FunctionDataType;
-
 public final class IntDataType implements TypedDataType<Integer> {
     Integer value;
 
