@@ -59,4 +59,22 @@ public class WhirlStringReader extends StringReader {
 
         return result.toString();
     }
+
+    public String readNumberString() throws CommandSyntaxException {
+        final int start = getCursor();
+        while (canRead() && isAllowedNumber(peek())) {
+            skip();
+        }
+        final String number = getString().substring(start, getCursor());
+        if (number.isEmpty()) {
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedFloat().createWithContext(this);
+        }
+        try {
+            Float.parseFloat(number);
+            return number;
+        } catch (final NumberFormatException ex) {
+            setCursor(start);
+            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().createWithContext(this, number);
+        }
+    }
 }

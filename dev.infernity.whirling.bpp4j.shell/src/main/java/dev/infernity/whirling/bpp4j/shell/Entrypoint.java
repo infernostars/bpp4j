@@ -4,6 +4,7 @@ import dev.infernity.whirling.bpp4j.lang.Bpp;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.TokenizationResult;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.Tokenizer;
 import org.fusesource.jansi.AnsiConsole;
+import org.fusesource.jansi.AnsiPrintStream;
 import picocli.CommandLine;
 
 import java.io.File;
@@ -36,7 +37,6 @@ public class Entrypoint {
             @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to parse") File file
     ) {
 
-        AnsiConsole.systemInstall();
         String content;
         try {
             content = Files.readString(file.toPath());
@@ -47,17 +47,20 @@ public class Entrypoint {
         var res = Tokenizer.tokenize(file.toPath(), content);
         switch (res) {
             case TokenizationResult.Error error -> {
-                IO.println(ansi().fg(Color.RED).a("An error occured in tokenization:\n").a(error.location().debugInfo().toString()));
+                try (AnsiPrintStream aps = AnsiConsole.out()) {
+                    aps.print(ansi().fg(Color.RED).a("An error occured in tokenization:\n").a(error.location().debugInfo().toString()).a("\n").bold().fg(Color.DEFAULT).a(error.message()).reset());
+                }
             }
-            case TokenizationResult.Success success -> {
+            case TokenizationResult.Success success -> {;
+                IO.println(res);
             }
         }
-        AnsiConsole.systemUninstall();
-        IO.println(res);
     }
 
     static void main(String[] args){
+        AnsiConsole.systemInstall();
         int exitCode = new CommandLine(new Entrypoint()).execute(args);
+        AnsiConsole.systemUninstall();
         System.exit(exitCode);
     }
 }

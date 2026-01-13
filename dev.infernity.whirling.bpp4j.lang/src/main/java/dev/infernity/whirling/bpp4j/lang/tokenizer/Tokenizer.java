@@ -75,6 +75,14 @@ public class Tokenizer {
                 }
                 yield new Token.CloseBracket(createSpan(start));
             }
+            case '-' -> {
+                char next = reader.peek(1);
+                if ((next >= '0' && next <= '9') || next == '.') {
+                    yield new Token.Number(reader.readNumberString(), createSpan(start));
+                }
+                yield new Token.UnquotedString(reader.readUnquotedString(), this.createSpan(start));
+            }
+            case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' -> new Token.Number(reader.readNumberString(), createSpan(start));
             default -> new Token.UnquotedString(reader.readUnquotedString(), this.createSpan(start));
         };
     }
