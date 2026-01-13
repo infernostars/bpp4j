@@ -15,6 +15,14 @@
         <module>dev.infernity.whirling.bpp4j.lang</module>
     </modules>
 
+    <repositories>
+        <repository>
+            <id>minecraft-libraries</id>
+            <name>Minecraft Libraries</name>
+            <url>https://libraries.minecraft.net</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -26,6 +34,16 @@
                 <groupId>org.jetbrains</groupId>
                 <artifactId>annotations</artifactId>
                 <version>26.0.2-1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.fusesource.jansi</groupId>
+                <artifactId>jansi</artifactId>
+                <version>2.4.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mojang</groupId>
+                <artifactId>brigadier</artifactId>
+                <version>1.0.18</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
