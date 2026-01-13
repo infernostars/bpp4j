@@ -24,8 +24,8 @@ public class Tokenizer {
         var list = new ArrayList<Token>();
         while(true) {
             Token token = tokenizeOnce();
-            if(token instanceof Token.Error e) {
-                return new TokenizationResult.Error(e.message(), createSpan());
+            if(token instanceof Token.Error(String message, SpanData range)) {
+                return new TokenizationResult.Error(message, range);
             }
             if(token instanceof Token.EndOfFile) {
                 list.add(new Token.EndOfFile(createSpan()));

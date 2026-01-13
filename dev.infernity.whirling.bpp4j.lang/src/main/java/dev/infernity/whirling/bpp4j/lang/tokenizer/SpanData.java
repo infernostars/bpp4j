@@ -55,7 +55,7 @@ public record SpanData(int cursorStart, int cursorEnd, String originalString, Pa
             return linePreview.trim() +
                     "\n" +
                     " ".repeat(from - startingWs) +
-                    "^".repeat(to - from)
+                    "^".repeat(Math.max(to - from - 1, 1)) // We use a max such that if a 0 width character were a thing [i.e. EndOfFile], we show it one to the right.
                     + "\n in " + fileName + ", line " + line;
         }
     }

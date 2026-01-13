@@ -43,16 +43,20 @@ public class Entrypoint {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        IO.println(content);
         var res = Tokenizer.tokenize(file.toPath(), content);
         switch (res) {
             case TokenizationResult.Error error -> {
                 try (AnsiPrintStream aps = AnsiConsole.out()) {
-                    aps.print(ansi().fg(Color.RED).a("An error occured in tokenization:\n").a(error.location().debugInfo().toString()).a("\n").bold().fg(Color.DEFAULT).a(error.message()).reset());
+                    aps.print(ansi().fg(Color.RED).a("An error occured in tokenization:\n")
+                            .a(error.location().debugInfo().toString()).a("\n")
+                            .bold().fgBright(Color.RED).a(error.message()).reset().a("\n\n"));
                 }
             }
-            case TokenizationResult.Success success -> {;
-                IO.println(res);
+            case TokenizationResult.Success success -> {
+                try (AnsiPrintStream aps = AnsiConsole.out()) {
+                    aps.print(ansi().fg(Color.GREEN).a("Tokenization successful.\n").reset()
+                            .a(success.pretty()).a("\n\n"));
+                }
             }
         }
     }
