@@ -166,7 +166,7 @@ public final class Parser {
             }
             case Token.UnquotedString us -> {
                 index++;
-                yield new Node.VariableExpression(us.value(), us.range());
+                yield new Node.StringNode(us.value(), us.range());
             }
             case Token.EndOfFile _ -> {
                 int bracketIndex = nestingTokenIndexes.getLast();
