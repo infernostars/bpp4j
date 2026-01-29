@@ -1,24 +1,27 @@
 package dev.infernity.whirling.bpp4j.lang.parsing;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.infernity.whirling.bpp4j.lang.SpanData;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.Token;
 
 import java.nio.file.Path;
-import java.rmi.UnexpectedException;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class Parser {
     int nestingLevel;
+    List<Integer> nestingTokenIndexes;
     Path fileName;
     String contents;
+    List<Token> tokenList;
     boolean isFunctionDeclaration;
+    int index;
 
 
-    public static ParsingResult tokenize(Path fileName, String file){
+    public static ParsingResult tokenize(Path fileName, String file, List<Token> tokenList){
         var parser = new Parser();
         parser.fileName = fileName;
         parser.contents = file;
+        parser.tokenList = tokenList;
 
         var res = parser.parseLoop();
         return res;
@@ -30,6 +33,8 @@ public final class Parser {
             Node node = parseOnce();
             if(node instanceof Node.Error(String message, SpanData range)) {
                 return new ParsingResult.Error(message, range);
+            } else if (node instanceof Node.Complete) {
+                return new ParsingResult.Success(list);
             }
             list.add(node);
         }
@@ -41,7 +46,7 @@ public final class Parser {
     }
 
     private Node parseInner() {
-        throw new RuntimeException("TODO");
+
     }
 
     public SpanData createSpan(Token start, Token end) {

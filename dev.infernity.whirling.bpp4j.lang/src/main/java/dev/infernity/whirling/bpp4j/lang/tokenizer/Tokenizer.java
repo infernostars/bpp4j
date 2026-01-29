@@ -85,6 +85,10 @@ public final class Tokenizer {
             }
             case '$' -> {
                 reader.expect('$');
+                String ident = reader.readIdentifier();
+                if (ident.isEmpty()) {
+                    yield new Token.Error("Short variable declaration without an identifier (hint: use backslashes to escape)", createSpan(start));
+                }
                 yield new Token.ShortVariableExpression(reader.readIdentifier(), this.createSpan(start));
             }
             case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' -> new Token.Number(reader.readNumberString(), createSpan(start));
