@@ -1,4 +1,4 @@
-package dev.infernity.whirling.bpp4j.lang.tokenizer;
+package dev.infernity.whirling.bpp4j.lang;
 
 import com.mojang.brigadier.StringReader;
 import org.jetbrains.annotations.NotNull;

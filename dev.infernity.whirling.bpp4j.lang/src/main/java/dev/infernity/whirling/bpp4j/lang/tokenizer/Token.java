@@ -1,6 +1,9 @@
 package dev.infernity.whirling.bpp4j.lang.tokenizer;
 
+import dev.infernity.whirling.bpp4j.lang.SpanData;
+
 public sealed interface Token {
+    SpanData range();
 
     record Error(String message, SpanData range) implements Token {}
 

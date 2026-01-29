@@ -1,5 +1,7 @@
 package dev.infernity.whirling.bpp4j.lang.tokenizer;
 
+import dev.infernity.whirling.bpp4j.lang.SpanData;
+
 import java.util.List;
 
 public sealed interface TokenizationResult {

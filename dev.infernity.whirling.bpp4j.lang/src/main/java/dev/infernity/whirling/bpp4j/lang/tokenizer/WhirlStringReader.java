@@ -38,12 +38,13 @@ public class WhirlStringReader extends StringReader {
         while(this.canRead()) {
             char c = this.read();
             if (escaped) {
-                if ((unquotedStringExceptions.indexOf(c) == -1) && c != '\\') {
+                if ((unquotedStringExceptions.indexOf(c) == -1) && c != '\\' && c != '\n') {
                     this.setCursor(this.getCursor() - 1);
                     throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidEscape().createWithContext(this, String.valueOf(c));
                 }
-
-                result.append(c);
+                if (c != '\n') {
+                    result.append(c);
+                }
                 escaped = false;
             } else if (c == '\\') {
                 escaped = true;
@@ -76,5 +77,20 @@ public class WhirlStringReader extends StringReader {
             setCursor(start);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerInvalidFloat().createWithContext(this, number);
         }
+    }
+
+    public static boolean isAllowedInIdentifier(final char c) {
+        return c >= '0' && c <= '9'
+                || c >= 'A' && c <= 'Z'
+                || c >= 'a' && c <= 'z'
+                || c == '_' || c == '.';
+    }
+
+    public String readIdentifier() {
+        final int start = this.getCursor();
+        while (this.canRead() && isAllowedInIdentifier(this.peek())) {
+            this.skip();
+        }
+        return this.getString().substring(start, this.getCursor());
     }
 }

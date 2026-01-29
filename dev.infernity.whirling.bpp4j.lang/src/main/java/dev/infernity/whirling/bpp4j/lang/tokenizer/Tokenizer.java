@@ -1,12 +1,13 @@
 package dev.infernity.whirling.bpp4j.lang.tokenizer;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.infernity.whirling.bpp4j.lang.SpanData;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class Tokenizer {
-    static String exceptions = "[]";
+public final class Tokenizer {
+    static String exceptions = "[]$";
     Path fileName;
     WhirlStringReader reader;
     int nestingLevel;
@@ -81,6 +82,10 @@ public class Tokenizer {
                     yield new Token.Number(reader.readNumberString(), createSpan(start));
                 }
                 yield new Token.UnquotedString(reader.readUnquotedString(), this.createSpan(start));
+            }
+            case '$' -> {
+                reader.expect('$');
+                yield new Token.ShortVariableExpression(reader.readIdentifier(), this.createSpan(start));
             }
             case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' -> new Token.Number(reader.readNumberString(), createSpan(start));
             default -> new Token.UnquotedString(reader.readUnquotedString(), this.createSpan(start));
