@@ -1,6 +1,8 @@
 package dev.infernity.whirling.bpp4j.shell;
 
-import dev.infernity.whirling.bpp4j.lang.Bpp;
+import dev.infernity.whirling.bpp4j.lang.SpanData;
+import dev.infernity.whirling.bpp4j.lang.parsing.Parser;
+import dev.infernity.whirling.bpp4j.lang.parsing.ParsingResult;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.TokenizationResult;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.Tokenizer;
 import org.fusesource.jansi.AnsiConsole;
@@ -16,6 +18,7 @@ import static org.fusesource.jansi.Ansi.*;
 @CommandLine.Command(name = "bpp4j", subcommands = {CommandLine.HelpCommand.class, InteractivePrompt.class})
 public class Entrypoint {
 
+    @SuppressWarnings("unused")
     @CommandLine.Command(name = "run", description = "Run a bpp file.")
     void run(
             @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to run") File file
@@ -27,14 +30,15 @@ public class Entrypoint {
             throw new RuntimeException(e);
         }
         IO.println(content);
-        var intState = Bpp.create(content);
+        //var intState = Bpp.create(content);
         throw new RuntimeException("Waaaa not implemented yet!!! Waaaaa");
     }
 
 
-    @CommandLine.Command(name = "parse", description = "Parse a bpp file.")
-    void parse(
-            @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to parse") File file
+    @SuppressWarnings("unused")
+    @CommandLine.Command(name = "tokenize", description = "Tokenize a bpp file.")
+    void tokenize(
+            @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to tokenize") File file
     ) {
 
         String content;
@@ -55,6 +59,49 @@ public class Entrypoint {
             case TokenizationResult.Success success -> {
                 try (AnsiPrintStream aps = AnsiConsole.out()) {
                     aps.print(ansi().fg(Color.GREEN).a("Tokenization successful.\n").reset()
+                            .a(success.pretty()).a("\n\n"));
+                }
+            }
+        }
+    }
+
+
+    @SuppressWarnings("unused")
+    @CommandLine.Command(name = "parse", description = "Parse a bpp file.")
+    void parse(
+            @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to parse") File file
+    ) {
+
+        String content;
+        try {
+            content = Files.readString(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        var res = Tokenizer.tokenize(file.toPath(), content);
+        if (res instanceof TokenizationResult.Error(
+                String message, SpanData location
+        )) {
+            try (AnsiPrintStream aps = AnsiConsole.out()) {
+                aps.print(ansi().fg(Color.RED).a("An error occured in tokenization:\n")
+                        .a(location.debugInfo().toString()).a("\n")
+                        .bold().fgBright(Color.RED).a(message).reset().a("\n\n"));
+            }
+        }
+        assert res instanceof TokenizationResult.Success;
+        var tokens = ((TokenizationResult.Success) res).tokens();
+        var res2 = Parser.parse(file.toPath(), content, tokens);
+        switch (res2) {
+            case ParsingResult.Error error -> {
+                try (AnsiPrintStream aps = AnsiConsole.out()) {
+                    aps.print(ansi().fg(Color.RED).a("An error occured in parsing:\n")
+                            .a(error.location().debugInfo().toString()).a("\n")
+                            .bold().fgBright(Color.RED).a(error.message()).reset().a("\n\n"));
+                }
+            }
+            case ParsingResult.Success success -> {
+                try (AnsiPrintStream aps = AnsiConsole.out()) {
+                    aps.print(ansi().fg(Color.GREEN).a("Parsing successful.\n").reset()
                             .a(success.pretty()).a("\n\n"));
                 }
             }

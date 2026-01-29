@@ -17,8 +17,7 @@ public final class Tokenizer {
         tokenizer.fileName = fileName;
         tokenizer.reader = new WhirlStringReader(file, exceptions);
 
-        var res = tokenizer.tokenizeLoop();
-        return res;
+        return tokenizer.tokenizeLoop();
     }
 
     private TokenizationResult tokenizeLoop() {
@@ -89,7 +88,7 @@ public final class Tokenizer {
                 if (ident.isEmpty()) {
                     yield new Token.Error("Short variable declaration without an identifier (hint: use backslashes to escape)", createSpan(start));
                 }
-                yield new Token.ShortVariableExpression(reader.readIdentifier(), this.createSpan(start));
+                yield new Token.ShortVariableExpression(ident, this.createSpan(start));
             }
             case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.' -> new Token.Number(reader.readNumberString(), createSpan(start));
             default -> new Token.UnquotedString(reader.readUnquotedString(), this.createSpan(start));
@@ -104,6 +103,7 @@ public final class Tokenizer {
         return new SpanData(start, this.reader.getCursor(), this.reader.getString(), fileName);
     }
 
+    @SuppressWarnings("unused")
     public SpanData createSpan(int start, int end) {
         return new SpanData(start, end, this.reader.getString(), fileName);
     }
