@@ -8,11 +8,11 @@ import java.util.ArrayList;
 
 public final class Tokenizer {
     static String exceptions = "[]$";
-    Path fileName;
+    String fileName;
     WhirlStringReader reader;
     int nestingLevel;
 
-    public static TokenizationResult tokenize(Path fileName, String file){
+    public static TokenizationResult tokenize(String fileName, String file){
         var tokenizer = new Tokenizer();
         tokenizer.fileName = fileName;
         tokenizer.reader = new WhirlStringReader(file, exceptions);

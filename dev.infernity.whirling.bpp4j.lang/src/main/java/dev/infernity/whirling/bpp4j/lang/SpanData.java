@@ -3,9 +3,8 @@ package dev.infernity.whirling.bpp4j.lang;
 import com.mojang.brigadier.StringReader;
 import org.jetbrains.annotations.NotNull;
 
-import java.nio.file.Path;
 
-public record SpanData(int cursorStart, int cursorEnd, String originalString, Path fileName) {
+public record SpanData(int cursorStart, int cursorEnd, String originalString, String fileName) {
     @Override
     public @NotNull String toString() {
         return this.fileName + " at " + cursorStart + ".." + cursorEnd;
@@ -30,7 +29,7 @@ public record SpanData(int cursorStart, int cursorEnd, String originalString, Pa
 
         var lines = this.originalString.split("\n");
 
-        return new DebugInfo(this.fileName.toString(), lines[row - 1], column - 1, column + (cursorEnd - cursorStart), row);
+        return new DebugInfo(this.fileName, lines[row - 1], column - 1, column + (cursorEnd - cursorStart), row);
     }
 
     public record DebugInfo(

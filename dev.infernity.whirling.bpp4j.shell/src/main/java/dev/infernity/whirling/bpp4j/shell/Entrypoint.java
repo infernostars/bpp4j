@@ -47,7 +47,7 @@ public class Entrypoint {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        var res = Tokenizer.tokenize(file.toPath(), content);
+        var res = Tokenizer.tokenize(file.toPath().toString(), content);
         switch (res) {
             case TokenizationResult.Error error -> {
                 try (AnsiPrintStream aps = AnsiConsole.out()) {
@@ -78,7 +78,7 @@ public class Entrypoint {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        var res = Tokenizer.tokenize(file.toPath(), content);
+        var res = Tokenizer.tokenize(file.toPath().toString(), content);
         if (res instanceof TokenizationResult.Error(
                 String message, SpanData location
         )) {
@@ -90,7 +90,7 @@ public class Entrypoint {
         }
         assert res instanceof TokenizationResult.Success;
         var tokens = ((TokenizationResult.Success) res).tokens();
-        var res2 = Parser.parse(file.toPath(), content, tokens);
+        var res2 = Parser.parse(file.toPath().toString(), content, tokens);
         switch (res2) {
             case ParsingResult.Error error -> {
                 try (AnsiPrintStream aps = AnsiConsole.out()) {

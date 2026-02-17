@@ -10,14 +10,14 @@ import java.util.List;
 public final class Parser {
     int nestingLevel;
     List<Integer> nestingTokenIndexes;
-    Path fileName;
+    String fileName;
     String contents;
     List<Token> tokenList;
     boolean isFunctionDeclaration;
     int index;
 
 
-    public static ParsingResult parse(Path fileName, String file, List<Token> tokenList){
+    public static ParsingResult parse(String fileName, String file, List<Token> tokenList){
         var parser = new Parser();
         parser.fileName = fileName;
         parser.contents = file;
@@ -78,7 +78,7 @@ public final class Parser {
                 case Token.OpenBracket _ -> parseFunction();
                 default -> {
                     index++;
-                    yield new Node.Error("Unexpected token '" + contents.substring(token.range().cursorStart(), token.range().cursorEnd()) + "' at top level. Only text and [...] blocks are allowed.", token.range());
+                    yield new Node.Error("Unexpected token '" + contents.substring(token.range().cursorStart(), token.range().cursorEnd()) + "' at top level. Only text, short variable expressions, and [...] blocks are allowed.", token.range());
                 }
             };
         } else {
