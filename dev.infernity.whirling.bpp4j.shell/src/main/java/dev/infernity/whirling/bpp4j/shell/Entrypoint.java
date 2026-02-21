@@ -1,6 +1,8 @@
 package dev.infernity.whirling.bpp4j.shell;
 
 import dev.infernity.whirling.bpp4j.lang.SpanData;
+import dev.infernity.whirling.bpp4j.lang.interpreter.InterpreterState;
+import dev.infernity.whirling.bpp4j.lang.parsing.Node;
 import dev.infernity.whirling.bpp4j.lang.parsing.Parser;
 import dev.infernity.whirling.bpp4j.lang.parsing.ParsingResult;
 import dev.infernity.whirling.bpp4j.lang.tokenizer.TokenizationResult;
@@ -12,6 +14,7 @@ import picocli.CommandLine;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
 
 import static org.fusesource.jansi.Ansi.*;
 
@@ -23,15 +26,42 @@ public class Entrypoint {
     void run(
             @CommandLine.Parameters(arity = "1", paramLabel = "<file>", description = "the file to run") File file
     ) {
+
         String content;
         try {
             content = Files.readString(file.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        IO.println(content);
-        //var intState = Bpp.create(content);
-        throw new RuntimeException("Waaaa not implemented yet!!! Waaaaa");
+        var res = Tokenizer.tokenize(file.toPath().toString(), content);
+        if (res instanceof TokenizationResult.Error(
+                String message, SpanData location
+        )) {
+            try (AnsiPrintStream aps = AnsiConsole.out()) {
+                aps.print(ansi().fg(Color.RED).a("An error occured in tokenization:\n")
+                        .a(location.debugInfo().toString()).a("\n")
+                        .bold().fgBright(Color.RED).a(message).reset().a("\n\n"));
+            }
+            return;
+        }
+        assert res instanceof TokenizationResult.Success;
+        var tokens = ((TokenizationResult.Success) res).tokens();
+        var res2 = Parser.parse(file.toPath().toString(), content, tokens);
+        if (res2 instanceof ParsingResult.Error(
+                String message, SpanData location
+        )) {
+            try (AnsiPrintStream aps = AnsiConsole.out()) {
+                aps.print(ansi().fg(Color.RED).a("An error occured in parsing:\n")
+                        .a(location.debugInfo().toString()).a("\n")
+                        .bold().fgBright(Color.RED).a(message).reset().a("\n\n"));
+            }
+            return;
+        }
+        runInner(content, ((ParsingResult.Success) res2).nodes());
+    }
+
+    private void runInner(String source, List<Node> nodes) {
+        InterpreterState state = new InterpreterState(source, nodes);
     }
 
 

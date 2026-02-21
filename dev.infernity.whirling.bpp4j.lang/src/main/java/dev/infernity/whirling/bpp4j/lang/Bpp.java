@@ -6,6 +6,6 @@ public final class Bpp {
     private Bpp() {}
 
     public static InterpreterState create(String source) {
-        return new InterpreterState(source);
+        throw new IllegalStateException("TODO");
     }
 }
